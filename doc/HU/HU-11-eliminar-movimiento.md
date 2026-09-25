@@ -4,25 +4,27 @@
 Como usuario del hogar, quiero eliminar un movimiento del mes en curso, para quitar registros erróneos o que no corresponden.
 
 ## Alcance
-Cubre la capacidad 11 de Alcance — Incluye: eliminar un movimiento del mes en curso. No incluye eliminar movimientos de meses anteriores (fuera de alcance). Esta limitación, combinada con la regla de categorías (HU-07), implica que una categoría usada solo en meses cerrados no podrá eliminarse nunca (riesgo documentado del PRD; no ampliar alcance).
+Cubre la capacidad 12 de Alcance — Incluye: eliminar un movimiento del mes en curso. No incluye eliminar movimientos de meses anteriores (fuera de alcance). Esta limitación, combinada con la regla de categorías (HU-07), implica que una categoría usada solo en meses cerrados no podrá eliminarse nunca (riesgo documentado del PRD; no ampliar alcance). Requiere usuario autenticado (HU-12).
 
 ## Reglas de negocio
 - Solo se pueden eliminar movimientos del mes en curso.
 - Al eliminar, el movimiento deja de existir en el listado y deja de participar en los totales del resumen.
-- Persistencia local; moneda S/.
+- Persistencia en Neon vía backend; datos aislados por cuenta; moneda S/.
 - Eliminar un movimiento puede habilitar la eliminación de su categoría solo si esa categoría queda sin movimientos en ningún mes; si aún tiene movimientos en meses cerrados, la categoría sigue sin poder eliminarse (HU-07).
 
 ## Criterios de aceptación (Gherkin)
 
 ### Escenario: Camino feliz — eliminar movimiento del mes en curso
-Dado que existe un movimiento en el listado del mes en curso
+Dado que el usuario está autenticado
+Y existe un movimiento en el listado del mes en curso
 Cuando el usuario lo elimina
 Y confirma
 Entonces el movimiento ya no aparece en el listado del mes en curso
 Y los totales del resumen se actualizan sin ese monto
 
 ### Escenario: No se puede eliminar un movimiento de un mes anterior
-Dado que un movimiento pertenece a un mes ya cerrado
+Dado que el usuario está autenticado
+Y un movimiento pertenece a un mes ya cerrado
 Cuando el usuario opera en el MVP sobre el mes en curso
 Entonces ese movimiento no está disponible para eliminación
 Y solo puede eliminar movimientos del mes en curso

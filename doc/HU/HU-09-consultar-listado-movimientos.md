@@ -4,24 +4,26 @@
 Como usuario del hogar, quiero ver el listado de movimientos del mes en curso, para revisar qué ingresos y gastos registré este mes.
 
 ## Alcance
-Cubre la capacidad 9 de Alcance — Incluye: consultar el listado de movimientos del mes en curso. No incluye consultar movimientos de meses anteriores ni reportes históricos (fuera de alcance).
+Cubre la capacidad 10 de Alcance — Incluye: consultar el listado de movimientos del mes en curso. No incluye consultar movimientos de meses anteriores ni reportes históricos (fuera de alcance). Requiere usuario autenticado (HU-12).
 
 ## Reglas de negocio
 - Solo se listan movimientos del mes en curso.
 - Cada movimiento refleja al menos monto, fecha, categoría (y nota si la tiene).
-- Moneda S/. Persistencia local.
+- Moneda S/. Persistencia en Neon vía backend; datos aislados por cuenta.
 - Incluye movimientos de categorías predefinidas y propias.
 
 ## Criterios de aceptación (Gherkin)
 
 ### Escenario: Camino feliz — ver movimientos del mes
-Dado que el usuario registró varios gastos e ingresos en el mes en curso
+Dado que el usuario está autenticado
+Y registró varios gastos e ingresos en el mes en curso
 Cuando consulta el listado de movimientos del mes en curso
 Entonces ve esos movimientos con monto en S/, fecha y categoría
 Y no ve movimientos de meses anteriores
 
 ### Escenario: Mes sin movimientos
-Dado que el mes en curso no tiene movimientos
+Dado que el usuario está autenticado
+Y el mes en curso no tiene movimientos
 Cuando consulta el listado
 Entonces ve un listado vacío (o estado equivalente sin ítems)
 Y no se muestran movimientos de otros meses

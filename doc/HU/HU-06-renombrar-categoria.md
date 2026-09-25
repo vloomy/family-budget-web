@@ -4,25 +4,27 @@
 Como usuario del hogar, quiero renombrar una categoría propia o del catálogo inicial, para que el catálogo use los nombres que mi familia entiende.
 
 ## Alcance
-Cubre la capacidad 6 de Alcance — Incluye: renombrar una categoría, propia o del catálogo inicial. No incluye cambiar el tipo de la categoría ni eliminarla.
+Cubre la capacidad 7 de Alcance — Incluye: renombrar una categoría, propia o del catálogo inicial. No incluye cambiar el tipo de la categoría ni eliminarla. Requiere usuario autenticado (HU-12).
 
 ## Reglas de negocio
 - Se puede renombrar tanto categorías predefinidas como propias, sin diferencia de trato.
 - El renombre no elimina ni recrea la categoría: conserva su identidad, tipo, presupuesto y movimientos asociados.
 - Mientras una categoría tenga movimientos (en cualquier mes) y no se pueda eliminar, el usuario puede renombrarla (efecto documentado del alcance del PRD).
-- Persistencia local.
+- Persistencia en Neon vía backend; datos aislados por cuenta.
 
 ## Criterios de aceptación (Gherkin)
 
 ### Escenario: Camino feliz — renombrar categoría del catálogo inicial
-Dado que existe la categoría predefinida "comida"
+Dado que el usuario está autenticado
+Y existe la categoría predefinida "comida"
 Cuando el usuario la renombra a "alimentación"
 Y confirma
 Entonces el catálogo muestra "alimentación" en lugar de "comida"
 Y el tipo, presupuesto y movimientos asociados se conservan
 
 ### Escenario: Renombrar categoría que tiene movimientos (no eliminable)
-Dado que una categoría tiene movimientos registrados en algún mes
+Dado que el usuario está autenticado
+Y una categoría tiene movimientos registrados en algún mes
 Y por ello no puede eliminarse
 Cuando el usuario la renombra
 Y confirma
