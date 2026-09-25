@@ -4,10 +4,10 @@ Mapa operativo para agentes que trabajen en este repositorio. No duplica el PRD 
 
 ## 1. Project Overview
 
-App móvil de **presupuesto familiar** para que un usuario del hogar registre ingresos y gastos, defina presupuesto por categoría y vea cómo va el mes.
+App **web** de **presupuesto familiar** para que un usuario del hogar registre ingresos y gastos, defina presupuesto por categoría y vea cómo va el mes.
 
 - **Problema que ataca el MVP:** fricción al registrar movimientos y falta de visibilidad del gasto por categoría. El acuerdo entre miembros de la familia queda diferido a multiusuario (fuera del MVP).
-- **MVP:** un solo dispositivo/usuario, uso anónimo y local, sin cuentas ni backend, moneda **Soles peruanos (S/)**, ciclo **mensual fijo**, operación sobre el **mes en curso**.
+- **MVP:** aplicación web, **cuenta individual** (crear usuario e iniciar sesión; presupuesto **no compartible**), moneda **Soles peruanos (S/)**, ciclo **mensual fijo**, operación sobre el **mes en curso**.
 - **Audiencia:** público general hispanohablante, no experto en finanzas. Producto para cualquier familia (no un hogar particular).
 
 Detalle de alcance, actores, criterios de éxito y exclusiones: [`doc/PRD.md`](doc/PRD.md).
@@ -21,14 +21,14 @@ family-budget-web/
 └── doc/
     ├── project_brief.md      ← brief de stakeholder (insumo)
     ├── PRD.md                ← alcance vigente
-    ├── PRD-Auditoria.md      ← auditoría formal del PRD
-    └── HU/                   ← Historias de Usuario (una por capacidad)
+    └── HU/                   ← Historias de Usuario (HU-01…HU-12; una por capacidad del PRD)
 ```
 
 **Importante**
 
 - Trabajar sobre `doc/` para producto y requisitos.
-- No inventar carpetas de código ni stack: aún no hay implementación de la app.
+- Las HUs deben reflejar el PRD vigente: app **web**, cuenta individual (**HU-12**), persistencia **Neon vía NestJS + Prisma**, datos **aislados por cuenta**.
+- No inventar carpetas de código ni stack más allá de lo confirmado en el PRD / sección 5.
 - No ampliar alcance “por buena práctica” si no está en el PRD o en las HUs.
 
 ## 3. Product docs & source of truth
@@ -38,7 +38,6 @@ family-budget-web/
 | Alcance, actores, criterios, exclusiones | [`doc/PRD.md`](doc/PRD.md) |
 | Insumo original del stakeholder | [`doc/project_brief.md`](doc/project_brief.md) |
 | Historias de Usuario y escenarios Gherkin | [`doc/HU/`](doc/HU/) |
-| Dictamen de calidad formal del PRD | [`doc/PRD-Auditoria.md`](doc/PRD-Auditoria.md) |
 
 Si hay conflicto entre brief y PRD, **gana el PRD**. Si hay conflicto entre PRD y una HU, **escalar al Product Manager**; no “arreglar” el alcance en la HU.
 
@@ -49,32 +48,28 @@ Orquestación del equipo de producto en esta sesión:
 | Rol | Artefacto | Entrada |
 |-----|-----------|---------|
 | Product Manager | `doc/PRD.md` | brief / stakeholder |
-| Product Manager Auditor | `doc/PRD-Auditoria.md` | PRD |
 | Business Analyst | `doc/HU/*.md` | PRD |
 | UX Designer | (aún no) | HUs — **handoff retenido** hasta autorización explícita |
 
-Flujo: Brief → PRD → Auditoría → HUs → (UX pendiente de autorización).
+Flujo: Brief → PRD → HUs → (UX pendiente de autorización).
 
 En Herdr, dirigir agentes por `pane_id` (no por título con espacios). Ambigüedades de negocio: escalar al PM, no asumir.
 
 ## 5. Tech Stack
 
-**Pendiente — no inventar.**
+Confirmado para el MVP (detalle de librerías y despliegue: arquitectura):
 
-Cualquier stack futuro debe respetar las restricciones de producto ya confirmadas:
-
-- Móvil **multiplataforma** (iOS y Android), una sola base de código.
-- **Almacenamiento local** en el dispositivo; sin backend en el MVP.
-- Sin autenticación / cuentas en el MVP.
+- **Frontend:** aplicación web con **React**.
+- **Backend:** **NestJS (Node)** + **Neon (PostgreSQL)** + **Prisma** (ORM).
+- **Ingeniería:** **GitHub** (control de versiones) y **GitHub Actions** (CI/CD).
+- **Autenticación:** cuenta individual; datos aislados por usuario; sin compartir presupuesto en el MVP.
 - UI y copy en **español**; moneda **S/**.
-
-Cuando se elija stack, completar esta sección (runtime, framework, persistencia local, testing, package manager).
 
 ## 6. Development Workflow
 
-**Pendiente** hasta que exista código y herramientas de build.
+**Pendiente** hasta que existan herramientas de build en el repo.
 
-Hasta entonces, el “workflow” de agentes es documental: leer PRD/HU relevantes → proponer o editar artefactos en `doc/` → no implementar app sin decisión de stack.
+Hasta entonces, el “workflow” de agentes es documental: leer PRD/HU relevantes → proponer o editar artefactos en `doc/` → no implementar app sin alinear con el stack confirmado.
 
 ## 7. Architecture Rules (producto)
 
@@ -84,9 +79,11 @@ Reglas confirmadas que cualquier diseño o implementación debe respetar:
 - El presupuesto se **arrastra** al mes siguiente; el **sobrante no se acumula**.
 - Categorías tipadas (**gasto** o **ingreso**); catálogo inicial de 13 + creación/renombrado/eliminación por el usuario.
 - **No eliminar** una categoría si tiene movimientos en **cualquier** mes (efecto: categorías usadas en meses cerrados solo se pueden renombrar).
-- Sin analítica/telemetría; sin aviso in-app de ausencia de respaldo (riesgo aceptado).
+- Datos **aislados por cuenta**; el presupuesto **no se comparte** entre usuarios en el MVP.
+- Las capacidades del MVP (excepto crear cuenta / login) asumen **usuario autenticado**.
+- Sin analítica/telemetría.
 - Priorizar **simplicidad** sobre cantidad de funciones.
-- Diseño pensado para crecer a multiusuario/backend **sin** rehacer la base (lineamiento; concreción futura de arquitectura).
+- Diseño pensado para crecer a multiusuario compartido **sin** rehacer la base (lineamiento; concreción futura de arquitectura).
 
 ## 8. Agent Instructions
 
@@ -97,9 +94,10 @@ Reglas confirmadas que cualquier diseño o implementación debe respetar:
 
 **Nunca asumir**
 
-- Stack, librerías o estructura de código de la app.
-- Funcionalidades post-MVP (multiusuario, alertas, históricos, export, etc.).
+- Librerías o estructura de código no escritas en el PRD / stack confirmado.
+- Funcionalidades post-MVP (multiusuario compartido, alertas, históricos, export, etc.).
 - Umbrales o categorías no escritas en el PRD.
+- Campos concretos de registro (email, OAuth, etc.) si no están en el PRD o en una HU.
 
 **Pedir confirmación**
 
